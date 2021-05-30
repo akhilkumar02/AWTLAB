@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase.js"></script>
+    <script src="c.js"></script>
+    
+</head>
+<body >
+
+    <div class="container">
+        
+        <table >
+            <tr>
+                <th>Name</th>
+                <td>
+                    <input type="text" id="uname">
+                </td>
+            </tr>
+            <tr>
+                <th>RollNo</th>
+                <td >
+                    <input type="text" id="rollno">
+                </td>
+            </tr>
+            <tr>
+                <th>Branch</th>
+                <td >
+                    <input type="text" id="branch">
+                </td>
+            </tr>
+            <tr>
+                <td><button onclick="insertUser()" >Insert</button></td>
+                <td><button onclick="resetValues()" >Cancel</button></td> 
+            </tr>
+            <tr>
+             
+               <td colspan="2"><button onclick="displayUsers()" >Display</button></td> 
+                
+            </tr>
+        </table>
+    </div>
+    <br>
+    <div  id="display" >
+
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script> 
+    
+    <script>
+        //give ur conifg 
+        var firebaseConfig = {
+    apiKey: "AIzaSyBHITRoBAzEJTEJ7jw3Xn--ArTyzuWS6ko",
+    authDomain: "exps-9d35b.firebaseapp.com",
+    databaseURL: "https://exps-9d35b-default-rtdb.firebaseio.com",
+    projectId: "exps-9d35b",
+    storageBucket: "exps-9d35b.appspot.com",
+    messagingSenderId: "698047050992",
+    appId: "1:698047050992:web:a1d2f1a9efaa0cf346fe35",
+    measurementId: "G-MGBQJHC0MG"
+  };
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+var dbReference=firebase.database().ref().child("Students")
+
+//insertion
+function insertUser(){
+    let name=document.getElementById("uname").value
+    let rollno=document.getElementById("rollno").value
+    let branch=document.getElementById("branch").value
+
+    dbReference.child(rollno).set({
+        name:name,
+        rollno:rollno,
+        branch:branch
+    })
+    console.log("Inserted")
+    displayUsers()
+}
+
+//deletion
+function deleteUser(rollno){
+    dbReference.child(rollno).remove();
+    console.log(rollno," deleted")
+    displayUsers();
+}
+
+//updation
+function updateUser(name,rollno,branch){
+    dbReference.child(rollno).update({
+        name:name,
+        rollno:rollno,
+        branch:branch
+    })
+    console.log("UPDATED")
+    displayUsers();
+}
+
+//display records
+
+function displayUsers(){
+
+    t=document.createElement("TABLE");
+    t.border="1"
+    var row=t.insertRow(-1);
+    var ch2=row.insertCell(-1);   
+    var ch3=row.insertCell(-1);
+    var ch4=row.insertCell(-1);
+    var ch5=row.insertCell(-1);
+    ch2.innerHTML="Name";
+    ch3.innerHTML="Rollno";
+    ch4.innerHTML="Branch";
+    ch5.innerHTML="Operations";
+    var i=0;
+    
+    dbReference.on('child_added',(snap)=>{
+        r=t.insertRow(-1)
+        c2=r.insertCell(-1);
+        c3=r.insertCell(-1);
+        c4=r.insertCell(-1);
+        c5=r.insertCell(-1);
+        c2.innerHTML=snap.val().name;
+        c3.innerHTML=snap.val().rollno;
+        c4.innerHTML=snap.val().branch;
+        var button=document.createElement("button")
+        button.innerHTML="Delete"
+        c5.appendChild(button);
+        button.addEventListener("click",function(){
+            deleteUser(snap.val().rollno)
+        })
+        var button2=document.createElement("button")
+        button2.innerHTML="edit"
+        c5.appendChild(button2);
+        button2.addEventListener("click",function(){
+            name1=window.prompt("Name:",snap.val().name)
+            b=window.prompt("Branch:",snap.val().branch)
+            updateUser(name1,snap.val().rollno,b)
+
+        })
+     
+        i++;
+
+    })
+    displayD=document.getElementById("display")
+    displayD.innerHTML="";
+    if(i!=0)
+        displayD.appendChild(t)
+
+
+}
+displayUsers();
+function resetValues(){
+    document.getElementById("uname").value="";
+    document.getElementById("rollno").value="";
+    document.getElementById("branch").value="";
+}
+
+    </script>
+</body>
+</html>

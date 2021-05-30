@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+   
+
+    <head>
+        <title>
+            fire 
+        </title>
+        <style>
+            table, th, td {
+  border: 1px solid black;
+}
+        </style>
+    </head>
+    <body>
+        <center>
+        <label>NAME:</label>
+        <input id="name" type="text" placeholder="enter your name"><br>
+        <label>ROLL NO:</label>
+        <input id="rollno" type="text" placeholder="enter your rollno"><br><br>
+
+        <label>GMAIL:</label>
+        <input id="gmail" type="text" placeholder="enter your gmail"><br><br>
+        <br>
+        <button id="insert">INSERT</button> 
+        <button id="select">SELECT</button> 
+        <button id="update">UPDATE</button> 
+        <button id="delete">DELETE</button>
+        <button id="display" onclick="display()">DISPLAY</button>
+        </center>
+
+        <center>
+            <table id="table">
+                <tr>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>roll</th>
+                </tr>
+            </table>
+        </center>
+
+
+        <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script> 
+
+<script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyBHITRoBAzEJTEJ7jw3Xn--ArTyzuWS6ko",
+    authDomain: "exps-9d35b.firebaseapp.com",
+    databaseURL: "https://exps-9d35b-default-rtdb.firebaseio.com",
+    projectId: "exps-9d35b",
+    storageBucket: "exps-9d35b.appspot.com",
+    messagingSenderId: "698047050992",
+    appId: "1:698047050992:web:a1d2f1a9efaa0cf346fe35",
+    measurementId: "G-MGBQJHC0MG"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);       //paste
+  
+    //data
+    var name1,gmail1,rollno1;
+
+    function Data(){
+        name1=document.getElementById('name').value;
+        gmail1=document.getElementById('gmail').value;
+        rollno1=document.getElementById('rollno').value;
+    }
+    //insert
+    document.getElementById('insert').onclick=function(){
+            Data();
+            firebase.database().ref('person/'+rollno1).set({
+                NAME:name1,
+                Gmail:gmail1,
+                RollNo:rollno1
+            });
+    }
+    //selection
+    document.getElementById("select").onclick=function(){
+        Data();
+        firebase.database().ref('person/'+rollno1).on('value',function(snapshot){
+                document.getElementById('name').value=snapshot.val().NAME;
+                document.getElementById('gmail').value=snapshot.val().Gmail;
+                document.getElementById('rollno').value=snapshot.val().RollNo;
+
+        })
+    }
+    //update
+    document.getElementById('update').onclick=function(){
+            Data();
+            firebase.database().ref('person/'+rollno1).update({
+                NAME:name1,
+                Gmail:gmail1,
+                RollNo:rollno1
+            });
+    }
+    //delete
+
+    document.getElementById('delete').onclick=function(){
+            Data();
+            firebase.database().ref('person/'+rollno1).remove();
+    }
+    
+    function display(){
+        Data();
+        firebase.database().ref('person/').get().then((snapshot) => {
+  if (snapshot.exists()) {
+    snapshot.forEach(function(snap){
+        var row = document.getElementById("table").insertRow(-1);
+  var cell1 = row.insertCell(-1);
+  var cell2 = row.insertCell(-1);
+  var cell3 = row.insertCell(-1);
+  cell1.innerHTML = snap.val().NAME;
+  cell2.innerHTML = snap.val().Gmail;
+  cell3.innerHTML = snap.val().RollNo;
+    })
+  } else {
+    console.log("No data available");
+  }
+}).catch((error) => {
+  console.error(error);
+});
+    }
+    
+
+
+</script>
+
+    </body>
+</html>
